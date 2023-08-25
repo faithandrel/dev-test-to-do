@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import styled from 'styled-components';
 import { v4 as getUuidV4 } from 'uuid';
 import { Field, Label, Textarea, Button } from '../shared';
@@ -6,10 +6,24 @@ import { Task } from '../../interfaces';
 import { Item } from './item';
 
 const Container = styled.div`
+  margin-top: 8px;
   padding: 8px;
 `;
 
+const NavigationButton = styled(Button)<{ $active?: boolean }>`
+  background-color: ${props => (props.$active ? 'white' : '#a5a4a4')};
+  border: ${props => (props.$active ? '1px solid black' : 'none')};
+  margin-right: 8px;
+`;
+
+enum Mode {
+  All = 'All',
+  Pending = 'Pending',
+  Completed = 'Completed'
+}
+
 export const ToDo = () => {
+  const [mode, setMode] = useState<Mode>(Mode.All);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [description, setDescription] = useState<string>('');
 
@@ -30,6 +44,17 @@ export const ToDo = () => {
   const onRemove = (id: string) =>
     setTasks(items => items.filter(item => item.id !== id));
 
+  const showTasks = useMemo(
+    () =>
+      tasks.filter(task => {
+        if (mode === Mode.All) {
+          return true;
+        }
+        return mode === Mode.Completed ? task.complete : !task.complete;
+      }),
+    [tasks, mode]
+  );
+
   return (
     <>
       <h3>Add Task</h3>
@@ -45,18 +70,40 @@ export const ToDo = () => {
         </Field>
 
         <Button type="submit">Submit</Button>
+      </form>
+      <Container>
         {tasks.length ? (
-          <Container>
-            {tasks.map(task => (
+          <>
+            <div>
+              <NavigationButton
+                type="button"
+                $active={mode === Mode.All}
+                onClick={() => setMode(Mode.All)}>
+                {Mode.All}
+              </NavigationButton>
+              <NavigationButton
+                type="button"
+                $active={mode === Mode.Pending}
+                onClick={() => setMode(Mode.Pending)}>
+                {Mode.Pending}
+              </NavigationButton>
+              <NavigationButton
+                type="button"
+                $active={mode === Mode.Completed}
+                onClick={() => setMode(Mode.Completed)}>
+                {Mode.Completed}
+              </NavigationButton>
+            </div>
+            {showTasks.map(task => (
               <div key={task.id}>
                 <Item task={task} onCheck={onCheck} onRemove={onRemove} />
               </div>
             ))}
-          </Container>
+          </>
         ) : (
           <h3>No tasks added.</h3>
         )}
-      </form>
+      </Container>
     </>
   );
 };

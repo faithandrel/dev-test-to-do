@@ -38,7 +38,6 @@ export const Textarea = styled.textarea`
   border-radius: 4px;
   padding: 8px;
   border: 1px gray solid;
-  font-size: 0.9em;
 `;
 
 export const Checkbox = styled.input`

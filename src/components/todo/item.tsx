@@ -40,7 +40,7 @@ export const Item = ({ task, onCheck, onRemove }: ItemProps) => (
     <Actions>
       <Checkbox
         type="checkbox"
-        value={task.complete}
+        checked={task.complete}
         onChange={e => onCheck(task.id, e.target.checked)}
       />
       <Delete type="button" onClick={() => onRemove(task.id)}>
