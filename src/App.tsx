@@ -23,7 +23,11 @@ const App = () => {
   return (
     <Container className="App">
       <Content>
-        {isLoggedIn ? <ToDo /> : <LogIn onLogin={setIsLoggedIn} />}
+        {isLoggedIn ? (
+          <ToDo onLogOut={setIsLoggedIn} />
+        ) : (
+          <LogIn onLogin={setIsLoggedIn} />
+        )}
       </Content>
     </Container>
   );

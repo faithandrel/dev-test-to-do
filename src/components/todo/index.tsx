@@ -1,9 +1,13 @@
 import { useState, useMemo } from 'react';
 import styled from 'styled-components';
 import { v4 as getUuidV4 } from 'uuid';
-import { Field, Label, Textarea, Button } from '../shared';
+import { Field, Label, Textarea, Button, Link } from '../shared';
 import { Task } from '../../interfaces';
 import { Item } from './item';
+
+interface ToDoProps {
+  onLogOut: (value: boolean) => void;
+}
 
 const Container = styled.div`
   margin-top: 8px;
@@ -16,13 +20,19 @@ const NavigationButton = styled(Button)<{ $active?: boolean }>`
   margin-right: 8px;
 `;
 
+const Title = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
 enum Mode {
   All = 'All',
   Pending = 'Pending',
   Completed = 'Completed'
 }
 
-export const ToDo = () => {
+export const ToDo = ({ onLogOut }: ToDoProps) => {
   const [mode, setMode] = useState<Mode>(Mode.All);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [description, setDescription] = useState<string>('');
@@ -55,9 +65,17 @@ export const ToDo = () => {
     [tasks, mode]
   );
 
+  const logOut = () => {
+    localStorage.clear();
+    onLogOut(false);
+  };
+
   return (
     <>
-      <h3>Add Task</h3>
+      <Title>
+        <h3>Add Task</h3>
+        <Link onClick={logOut}>Log out</Link>
+      </Title>
       <form onSubmit={onAddTask}>
         <Field>
           <Label>Description</Label>
